@@ -1,19 +1,16 @@
+import json
+
+PREFIX = '/video/goodparts'
 TITLE = 'The Good Parts'
-RSS_FEED = 'http://thegoodparts.michaelstadtmiller.com/rss'
-NS = {}
 ART = 'art-default.jpg'
 ICON = 'icon-default.png'
-ICON_SEARCH = 'icon-search.png'
-#MLS reference TED
-#https://github.com/plexinc-plugins/TED-Talks.bundle/blob/master/Contents/Code/__init__.py
-def Start():
-    Plugin.AddViewGroup("Details", viewMode="InfoList", mediaType="items")
-    Plugin.AddViewGroup("List", viewMode="List", mediaType="items")
 
+API_URL = 'http://localhost:8000/api/get_some_scenes/'
+
+def Start():
     # Setup the default attributes for the ObjectContainer
-    ObjectContainer.title1 = TITLE
-    ObjectContainer.view_group = 'List'
     ObjectContainer.art = R(ART)
+    ObjectContainer.title1 = TITLE
 
     # Setup the default attributes for the other objects
     DirectoryObject.thumb = R(ICON)
@@ -22,40 +19,26 @@ def Start():
     VideoClipObject.art = R(ART)
 
 
-@handler('/video/thegoodparts', TITLE)
+@handler(PREFIX, TITLE)
 def MainMenu():
     oc = ObjectContainer()
-    # MLS: can specify customer art or thumb here. default is ART and ICON above.
-    
-    for video in XML.ElementFromURL(RSS_FEED).xpath('//item'):
-
-    url = video.xpath('./link')[0].text
-    title = video.xpath('./title')[0].text
-    date = video.xpath('./pubDate')[0].text
-    date = Datetime.ParseDate(date)
-    summary = video.xpath('./blip:puredescription', namespaces=NS)[0].text
-    thumb = video.xpath('./media:thumbnail', namespaces=NS)[0].get('url')
-
-    if thumb[0:4] != 'http':
-      thumb = 'http://a.images.blip.tv' + thumb
-
-    duration_text = video.xpath('./blip:runtime', namespaces=NS)[0].text
-    duration = int(duration_text) * 1000
-
-    oc.add(VideoClipObject(
-      url = url,
-      title = title,
-      summary = summary,
-      thumb = Callback(Thumb, url=thumb),
-      duration = duration,
-      originally_available_at = date
-    ))
-    
+    oc.add(DirectoryObject(key=Callback(LiveMenu), title="Live"))
     return oc
 
-def Thumb(url):
-    try:
-        data = HTTP.Request(url, cacheTime = CACHE_1MONTH).content
-        return DataObject(data, 'image/jpeg')
-    except:
-        return Redirect(R(ICON))
+
+@route(PREFIX + '/livemenu')
+def LiveMenu():
+    oc = ObjectContainer()
+    oc.add(DirectoryObject(key=Callback(ChannelMenu, channel=1), title="Channel 1"))
+    oc.add(DirectoryObject(key=Callback(ChannelMenu, channel=2), title="Channel 2"))
+    oc.add(DirectoryObject(key=Callback(ChannelMenu, channel=3), title="Channel 3"))
+    return oc
+
+
+@route(PREFIX + '/channelmenu')
+def ChannelMenu(channel=None):
+    items = HTTP.Request(API_URL).content
+    # read items as json, parse data out
+    # reference https://forums.plex.tv/discussion/28084/plex-plugin-development-walkthrough
+    return 'x'
+    # Return video content for specific live channel

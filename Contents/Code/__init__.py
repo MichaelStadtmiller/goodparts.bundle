@@ -4,8 +4,8 @@ PREFIX = '/video/goodparts'
 TITLE = 'The Good Parts'
 ART = 'art-default.jpg'
 ICON = 'icon-default.png'
-
 API_URL = 'http://localhost:8000/api/get_some_scenes/'
+
 
 def Start():
     # Setup the default attributes for the ObjectContainer
@@ -37,8 +37,16 @@ def LiveMenu():
 
 @route(PREFIX + '/channelmenu')
 def ChannelMenu(channel=None):
-    items = HTTP.Request(API_URL).content
+    oc = ObjectContainer()
+    items = json.loads(HTTP.Request(API_URL).content)
+    for i in items:
+        oc.add(VideoClipObject(
+            url = i['video_path'],
+            title = i['scene_name'],
+            summary = i['description'],
+            thumb = i['movie_poster'],
+        ))
     # read items as json, parse data out
     # reference https://forums.plex.tv/discussion/28084/plex-plugin-development-walkthrough
-    return 'x'
-    # Return video content for specific live channel
+    return oc
+

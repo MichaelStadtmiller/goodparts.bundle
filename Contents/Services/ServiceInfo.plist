@@ -8,7 +8,6 @@
     <dict>
       <key>URLPatterns</key>
       <array>
-        <string>http://([^.]+.)?euronews.net/.+</string>
         <string>https://cdn.video.playwire.com/.+</string>
       </array>
     </dict>

@@ -49,4 +49,3 @@ def ChannelMenu(channel=None):
     # read items as json, parse data out
     # reference https://forums.plex.tv/discussion/28084/plex-plugin-development-walkthrough
     return oc
-

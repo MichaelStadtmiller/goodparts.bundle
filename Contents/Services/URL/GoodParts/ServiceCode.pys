@@ -11,4 +11,4 @@ def MediaObjectsForURL(url):
 
 
 def PlayVideo(url):
-    return Redirect(url)
+    return Redirect(url)    

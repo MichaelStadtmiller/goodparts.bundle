@@ -1,0 +1,3 @@
+LOGS:
+tail -f /var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Logs/com.plexapp.plugins.thegoodparts.log
+tail -f /var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Logs/Pleex Media Server.log
